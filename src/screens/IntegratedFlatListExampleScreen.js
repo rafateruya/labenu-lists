@@ -17,7 +17,7 @@ export const IntegratedFlatListExampleScreen = () => {
 
   useEffect(() => {
     fetchItems();
-  });
+  }, []);
 
   const fetchItems = async (lastItemId) => {
     if (lastItemId) {
@@ -39,14 +39,16 @@ export const IntegratedFlatListExampleScreen = () => {
     fetchItems();
   };
 
-  const onEndReached = () => {
-    fetchItems(data[data.length - 1].id);
+  const onEndReached = async () => {
+    const lastItem = data[data.length - 1];
+    if (!(isLoadingMoreItems || isRefreshing || (lastItem && !lastItem.id))) {
+      await fetchItems(data[data.length - 1].id);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        style={{flexGrow: 1}}
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
